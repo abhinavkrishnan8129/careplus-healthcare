@@ -12,12 +12,14 @@ import {
   storage,
   users,
 } from "../appwrite.config";
+
 import { parseStringify } from "../utils";
 
+// ==============================
 // CREATE APPWRITE USER
+// ==============================
 export const createUser = async (user: CreateUserParams) => {
   try {
-    // Create new user -> https://appwrite.io/docs/references/1.5.x/server-nodejs/users#create
     const newuser = await users.create(
       ID.unique(),
       user.email,
@@ -28,60 +30,66 @@ export const createUser = async (user: CreateUserParams) => {
 
     return parseStringify(newuser);
   } catch (error: any) {
-    // Check existing user
-    if (error && error?.code === 409) {
+    // If user already exists
+    if (error?.code === 409) {
       const existingUser = await users.list([
         Query.equal("email", [user.email]),
       ]);
 
-      return existingUser.users[0];
+      return existingUser.users[0] ? parseStringify(existingUser.users[0]) : null;
     }
-    console.error("An error occurred while creating a new user:", error);
+
+    console.error("Error creating user:", error);
+    return null;
   }
 };
 
+// ==============================
 // GET USER
+// ==============================
 export const getUser = async (userId: string) => {
   try {
     const user = await users.get(userId);
-
     return parseStringify(user);
   } catch (error) {
-    console.error(
-      "An error occurred while retrieving the user details:",
-      error
-    );
+    console.error("Error retrieving user:", error);
+    return null;
   }
 };
 
+// ==============================
 // REGISTER PATIENT
+// ==============================
 export const registerPatient = async ({
   identificationDocument,
   ...patient
 }: RegisterUserParams) => {
   try {
-    // Upload file ->  // https://appwrite.io/docs/references/cloud/client-web/storage#createFile
-    let file;
-    if (identificationDocument) {
-      const inputFile =
-        identificationDocument &&
-        InputFile.fromBlob(
-          identificationDocument?.get("blobFile") as Blob,
-          identificationDocument?.get("fileName") as string
-        );
+    let file = null;
 
-      file = await storage.createFile(BUCKET_ID!, ID.unique(), inputFile);
+    // Upload file if exists
+    if (identificationDocument) {
+      const inputFile = InputFile.fromBlob(
+        identificationDocument.get("blobFile") as Blob,
+        identificationDocument.get("fileName") as string
+      );
+
+      file = await storage.createFile(
+        BUCKET_ID!,
+        ID.unique(),
+        inputFile
+      );
     }
 
-    // Create new patient document -> https://appwrite.io/docs/references/cloud/server-nodejs/databases#createDocument
+    // Create patient document
     const newPatient = await databases.createDocument(
       DATABASE_ID!,
       PATIENT_COLLECTION_ID!,
       ID.unique(),
       {
-        identificationDocumentId: file?.$id ? file.$id : null,
+        identificationDocumentId: file?.$id ?? null,
         identificationDocumentUrl: file?.$id
-          ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view??project=${PROJECT_ID}`
+          ? `${ENDPOINT}/storage/buckets/${BUCKET_ID}/files/${file.$id}/view?project=${PROJECT_ID}`
           : null,
         ...patient,
       }
@@ -89,11 +97,14 @@ export const registerPatient = async ({
 
     return parseStringify(newPatient);
   } catch (error) {
-    console.error("An error occurred while creating a new patient:", error);
+    console.error("Error creating patient:", error);
+    return null;
   }
 };
 
+// ==============================
 // GET PATIENT
+// ==============================
 export const getPatient = async (userId: string) => {
   try {
     const patients = await databases.listDocuments(
@@ -102,11 +113,16 @@ export const getPatient = async (userId: string) => {
       [Query.equal("userId", [userId])]
     );
 
-    return parseStringify(patients.documents[0]);
+    const patient = patients.documents[0];
+
+    // ✅ FIX: Prevent undefined JSON error
+    if (!patient) {
+      return null;
+    }
+
+    return parseStringify(patient);
   } catch (error) {
-    console.error(
-      "An error occurred while retrieving the patient details:",
-      error
-    );
+    console.error("Error retrieving patient:", error);
+    return null;
   }
 };

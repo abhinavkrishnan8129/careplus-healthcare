@@ -1,0 +1,5 @@
+app/api/sentry-example-api/route.ts(1,42): error TS2307: Cannot find module 'appwrite' or its corresponding type declarations.
+app/api/sentry-example-api/route.ts(15,28): error TS7006: Parameter 'req' implicitly has an 'any' type.
+app/api/sentry-example-api/route.ts(18,26): error TS7053: Element implicitly has an 'any' type because expression of type 'any' can't be used to index type '{ cardiac: string; heart: string; dental: string; }'.
+components/forms/AppointmentForm.tsx(106,60): error TS2345: Argument of type '{ userId: string; appointmentId: string; appointment: { primaryPhysician: string; schedule: Date; status: Status; cancellationReason: string | undefined; }; type: "schedule" | "create" | "cancel"; }' is not assignable to parameter of type 'UpdateAppointmentParams'.
+  Property 'timeZone' is missing in type '{ userId: string; appointmentId: string; appointment: { primaryPhysician: string; schedule: Date; status: Status; cancellationReason: string | undefined; }; type: "schedule" | "create" | "cancel"; }' but required in type 'UpdateAppointmentParams'.
