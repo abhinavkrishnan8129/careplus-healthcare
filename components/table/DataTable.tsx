@@ -8,7 +8,7 @@ import {
   useReactTable,
 } from "@tanstack/react-table";
 import Image from "next/image";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 
 import { Button } from "@/components/ui/button";
@@ -31,6 +31,7 @@ export function DataTable<TData, TValue>({
   columns,
   data,
 }: DataTableProps<TData, TValue>) {
+  const router = useRouter();
   const encryptedKey =
     typeof window !== "undefined"
       ? window.localStorage.getItem("accessKey")
@@ -39,10 +40,10 @@ export function DataTable<TData, TValue>({
   useEffect(() => {
     const accessKey = encryptedKey && decryptKey(encryptedKey);
 
-    if (accessKey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY!.toString()) {
-      redirect("/");
+    if (accessKey !== process.env.NEXT_PUBLIC_ADMIN_PASSKEY) {
+      router.push("/");
     }
-  }, [encryptedKey]);
+  }, [encryptedKey, router]);
 
   const table = useReactTable({
     data,

@@ -33,4 +33,14 @@ export interface Appointment extends Models.Document {
   note: string;
   userId: string;
   cancellationReason: string | null;
+  paymentStatus?: string;
+  consultationStatus?: string;
+}
+
+export interface Feedback extends Models.Document {
+  patientName: string;
+  doctorName: string;
+  rating: number;
+  experience: string;
+  feedbackMessage?: string;
 }

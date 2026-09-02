@@ -52,6 +52,14 @@ declare type UpdateAppointmentParams = {
   appointmentId: string;
   userId: string;
   timeZone: string;
-  appointment: Appointment;
+  appointment: Partial<Appointment>;
   type: string;
+};
+
+declare type CreateFeedbackParams = {
+  patientName: string;
+  doctorName: string;
+  rating: number;
+  experience: string;
+  feedbackMessage?: string;
 };

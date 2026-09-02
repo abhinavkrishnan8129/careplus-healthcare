@@ -1,11 +1,11 @@
 "use client"
 
-import * as React from "react"
-import { Dialog as DialogPrimitive } from "radix-ui"
-
-import { cn } from "@/components/lib/utils"
-import { Button } from "@/components/ui/button"
 import { XIcon } from "lucide-react"
+import { Dialog as DialogPrimitive } from "radix-ui"
+import * as React from "react"
+
+import { Button } from "@/components/ui/button"
+import { cn } from "@/lib/utils"
 
 function Dialog({
   ...props
@@ -72,7 +72,7 @@ function DialogContent({
             <Button
               variant="ghost"
               className="absolute top-2 right-2"
-              size="icon-sm"
+              size="icon"
             >
               <XIcon
               />

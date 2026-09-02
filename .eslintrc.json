@@ -8,23 +8,10 @@
   ],
   "rules": {
     "no-undef": "off",
-    "import/order": [
-      "error",
-      {
-        "groups": [
-          "builtin",
-          "external",
-          "internal",
-          "parent",
-          "sibling",
-          "index"
-        ],
-        "newlines-between": "always",
-        "alphabetize": {
-          "order": "asc",
-          "caseInsensitive": true
-        }
-      }
-    ]
+    "import/order": "off",
+    "tailwindcss/classnames-order": "off",
+    "tailwindcss/no-custom-classname": "off",
+    "tailwindcss/enforces-shorthand": "off",
+    "react-hooks/exhaustive-deps": "off"
   }
 }

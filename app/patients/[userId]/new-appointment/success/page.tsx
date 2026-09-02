@@ -4,6 +4,8 @@ import Link from "next/link";
 import { Button } from "@/components/ui/button";
 import { Doctors } from "@/constants";
 import { getAppointment } from "@/lib/actions/appointment.actions";
+import PaymentButton from "@/components/PaymentButton";
+import { AppointmentModal } from "@/components/AppointmentModal";
 import { formatDateTime } from "@/lib/utils";
 
 const RequestSuccess = async ({
@@ -67,13 +69,40 @@ const RequestSuccess = async ({
           </div>
         </section>
 
-        <Button variant="outline" className="shad-primary-btn" asChild>
-          <Link href={`/patients/${userId}/new-appointment`}>
-            New Appointment
-          </Link>
-        </Button>
+        <div className="mt-6 flex w-full max-w-[600px] flex-col gap-4 border-t border-dark-500 pt-6">
+          <PaymentButton 
+            appointmentId={appointment.$id} 
+            paymentStatus={appointment.paymentStatus} 
+            userId={userId} 
+          />
+          
+          {appointment.status !== "cancelled" && (
+            <AppointmentModal
+              patientId={appointment.patient.$id}
+              userId={userId}
+              appointment={appointment}
+              type="cancel"
+              title="Cancel Appointment"
+              description="Are you sure you want to cancel this appointment?"
+            />
+          )}
+        </div>
 
-        <p className="copyright">© 2024 CarePluse</p>
+        <div className="flex gap-4 mt-8">
+          <Button variant="outline" className="shad-primary-btn" asChild>
+            <Link href={`/patients/${userId}/new-appointment`}>
+              New Appointment
+            </Link>
+          </Button>
+
+          <Button variant="outline" className="shad-primary-btn bg-dark-400 border-dark-500" asChild>
+            <Link href={`/patients/${userId}/appointments`}>
+              View Appointments
+            </Link>
+          </Button>
+        </div>
+
+        <p className="copyright">© 2026 CarePluse</p>
       </div>
     </div>
   );

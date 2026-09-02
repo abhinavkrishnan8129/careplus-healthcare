@@ -88,7 +88,7 @@ const RegisterForm = ({ user }: { user: User }) => {
       const newPatient = await registerPatient(patient);
 
       if (newPatient) {
-        router.push(`/patients/${user.$id}/new-appointment`);
+        router.push(`/recommendation?userId=${user.$id}`);
       }
     } catch (error) {
       console.log(error);
@@ -164,11 +164,15 @@ const RegisterForm = ({ user }: { user: User }) => {
                   <RadioGroup
                     className="flex h-11 gap-6 xl:justify-between"
                     onValueChange={field.onChange}
-                    defaultValue={field.value}
+                    value={field.value}
                   >
                     {GenderOptions.map((option, i) => (
                       <div key={option + i} className="radio-group">
-                        <RadioGroupItem value={option} id={option} />
+                        <RadioGroupItem
+                          value={option}
+                          id={option}
+                          className="data-[state=checked]:border-green-500 data-[state=checked]:bg-green-500 data-[state=checked]:[&_span]:bg-dark-400"
+                        />
                         <Label htmlFor={option} className="cursor-pointer">
                           {option}
                         </Label>

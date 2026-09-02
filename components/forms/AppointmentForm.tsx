@@ -107,6 +107,11 @@ export const AppointmentForm = ({
         const updatedAppointment = await updateAppointment(appointmentToUpdate);
 
         if (updatedAppointment) {
+          if (type === "schedule") {
+            window.alert("Appointment scheduled and SMS notification sent");
+          } else if (type === "cancel") {
+            window.alert("Appointment cancelled successfully");
+          }
           setOpen && setOpen(false);
           form.reset();
         }
@@ -120,7 +125,7 @@ export const AppointmentForm = ({
   let buttonLabel;
   switch (type) {
     case "cancel":
-      buttonLabel = "Cancel Appointment";
+      buttonLabel = "Confirm Cancel";
       break;
     case "schedule":
       buttonLabel = "Schedule Appointment";
@@ -148,7 +153,8 @@ export const AppointmentForm = ({
               control={form.control}
               name="primaryPhysician"
               label="Doctor"
-              placeholder="Select a doctor"
+              placeholder="Doctor selection currently unavailable"
+              disabled
             >
               {Doctors.map((doctor, i) => (
                 <SelectItem key={doctor.name + i} value={doctor.name}>

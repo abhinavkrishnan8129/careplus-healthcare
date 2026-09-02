@@ -9,6 +9,7 @@ import { Appointment } from "@/types/appwrite.types";
 
 import { AppointmentModal } from "../AppointmentModal";
 import { StatusBadge } from "../StatusBadge";
+import { ConsultationActions } from "../ConsultationActions";
 
 export const columns: ColumnDef<Appointment>[] = [
   {
@@ -33,6 +34,58 @@ export const columns: ColumnDef<Appointment>[] = [
       return (
         <div className="min-w-[115px]">
           <StatusBadge status={appointment.status} />
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "paymentStatus",
+    header: "Payment Status",
+    cell: ({ row }) => {
+      const appointment = row.original;
+      const isPaid = appointment.paymentStatus === "paid";
+      
+      console.log(`[Admin Table] Appointment ${appointment.$id} payment status:`, appointment.paymentStatus);
+      
+      return (
+        <div className="min-w-[115px]">
+          {isPaid ? (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-green-400/20 px-4 py-2 text-green-400">
+              <span className="text-12-semibold">Paid ✅</span>
+            </div>
+          ) : (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-yellow-400/20 px-4 py-2 text-yellow-400">
+              <span className="text-12-semibold">Pending 💳</span>
+            </div>
+          )}
+        </div>
+      );
+    },
+  },
+  {
+    accessorKey: "consultationStatus",
+    header: "Consultation Status",
+    cell: ({ row }) => {
+      const appointment = row.original;
+      const status = appointment.consultationStatus || "pending";
+
+      return (
+        <div className="min-w-[115px]">
+          {status === "pending" && (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-blue-400/20 px-4 py-2 text-blue-400">
+              <span className="text-12-semibold">Not Checked ⏳</span>
+            </div>
+          )}
+          {status === "completed" && (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-green-400/20 px-4 py-2 text-green-400">
+              <span className="text-12-semibold">Completed ✅</span>
+            </div>
+          )}
+          {status === "absent" && (
+            <div className="flex w-fit items-center gap-2 rounded-full bg-red-400/20 px-4 py-2 text-red-400">
+              <span className="text-12-semibold">Absent ❌</span>
+            </div>
+          )}
         </div>
       );
     },
@@ -79,16 +132,23 @@ export const columns: ColumnDef<Appointment>[] = [
     cell: ({ row }) => {
       const appointment = row.original;
 
+      const isPaid = appointment.paymentStatus === "paid";
+      const isScheduleDisabled = appointment.status !== "pending" || !isPaid;
+
       return (
-        <div className="flex gap-1">
-          <AppointmentModal
-            patientId={appointment.patient.$id}
-            userId={appointment.userId}
-            appointment={appointment}
-            type="schedule"
-            title="Schedule Appointment"
-            description="Please confirm the following details to schedule."
-          />
+        <div className="flex gap-2 items-center">
+          <div title={!isPaid ? "Payment not completed" : ""}>
+            <AppointmentModal
+              patientId={appointment.patient.$id}
+              userId={appointment.userId}
+              appointment={appointment}
+              type="schedule"
+              title="Schedule Appointment"
+              description="Please confirm the following details to schedule."
+              disabled={isScheduleDisabled}
+            />
+          </div>
+          {!isPaid && <span className="sr-only">Payment not completed</span>}
           <AppointmentModal
             patientId={appointment.patient.$id}
             userId={appointment.userId}
@@ -96,6 +156,12 @@ export const columns: ColumnDef<Appointment>[] = [
             type="cancel"
             title="Cancel Appointment"
             description="Are you sure you want to cancel your appointment?"
+            disabled={appointment.status === "cancelled"}
+          />
+          <ConsultationActions 
+            appointmentId={appointment.$id} 
+            status={appointment.status} 
+            consultationStatus={appointment.consultationStatus} 
           />
         </div>
       );

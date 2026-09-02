@@ -126,3 +126,20 @@ export const getPatient = async (userId: string) => {
     return null;
   }
 };
+
+// ==============================
+// GET DEFAULT PATIENT (For Recommendation Test)
+// ==============================
+export const getDefaultPatient = async () => {
+  try {
+    const patients = await databases.listDocuments(
+      DATABASE_ID!,
+      PATIENT_COLLECTION_ID!,
+      [Query.limit(1)]
+    );
+    return patients.documents.length > 0 ? parseStringify(patients.documents[0]) : null;
+  } catch (error) {
+    console.error("Error retrieving default patient:", error);
+    return null;
+  }
+};

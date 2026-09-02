@@ -1,5 +1,7 @@
 import { Query } from "node-appwrite";
+
 import { databases } from "@/lib/appwrite.config";
+import { parseStringify } from "@/lib/utils";
 
 const map: Record<string, string> = {
   cardiac: "cardiology",
@@ -10,7 +12,7 @@ const map: Record<string, string> = {
 export async function POST(req: Request) {
   try {
     const body = await req.json();
-    const disease = body.disease?.toLowerCase();
+    const disease = body.disease?.toLowerCase() as string;
 
     const specialization = map[disease];
 
@@ -27,7 +29,7 @@ export async function POST(req: Request) {
       ]
     );
 
-    return Response.json({ doctors: res.documents });
+    return Response.json({ doctors: parseStringify(res.documents) });
 
   } catch (error: any) {
     console.log(error);
